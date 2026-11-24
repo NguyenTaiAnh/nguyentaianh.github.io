@@ -1,0 +1,1237 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nguyễn Tài Anh — Mobile & Web Developer</title>
+<meta name="description" content="Nguyễn Tài Anh — Mobile & Web Developer, 8+ years. Building IVB Biz+, Indovina Bank's business banking app, with React Native and ReactJS.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* OD-LAYOUT-PRIMITIVES v1 — structure only: display, flex/grid, overflow, wrapping, ratio, geometry.
+   Put this @layer first; product CSS outside the layer wins ordinary layout rules.
+   Native hidden and closed-dialog states take precedence over component display rules. */
+@layer od-layout {
+  [hidden]:not([hidden="until-found" i]) { display: none !important; }
+  dialog:not([open]) { display: none !important; }
+
+  :where(.od-stack,.od-row,.od-row-top,.od-cluster,.od-grid,.od-field,.od-stat,.od-cell,.od-tile) > :where(*) { min-width: 0; }
+
+  .od-stack   { display: flex; flex-direction: column; gap: var(--od-gap, 8px); }
+  .od-row     { display: flex; align-items: center; gap: var(--od-gap, 8px); }
+  .od-row-top { display: flex; align-items: flex-start; gap: var(--od-gap, 8px); }
+  .od-cluster { display: flex; flex-wrap: wrap; align-items: center; gap: var(--od-gap, 8px); }
+  .od-fill    { flex: 1 1 0; min-width: 0; }
+  .od-fixed   { flex: none; }
+  .od-grid    { display: grid; gap: var(--od-gap, 12px); grid-template-columns: repeat(var(--od-cols, 3), minmax(0, 1fr)); }
+
+  .od-stat, .od-field, .od-cell { display: grid; gap: var(--od-gap, 2px); }
+  :where(.od-stat,.od-field,.od-cell) > :where(*) { display: block; }
+  .od-tile { display: grid; grid-template-rows: auto 1fr; }
+  :where(.od-tile) > :where(*) { display: block; }
+
+  .od-media { display: block; width: 100%; height: auto; aspect-ratio: var(--od-ratio, auto); }
+  .od-media-cover { object-fit: cover; }
+
+  .od-icon { display: inline-block; inline-size: var(--od-icon-size, 1em); block-size: var(--od-icon-size, 1em); flex: none; }
+
+  .od-truncate { display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .od-clamp-2, .od-clamp-3 { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+  .od-clamp-2 { -webkit-line-clamp: 2; }
+  .od-clamp-3 { -webkit-line-clamp: 3; }
+  .od-lines-2 { min-height: calc(2 * 1.4em); }
+  .od-nowrap  { white-space: nowrap; }
+  .od-keep    { word-break: keep-all; overflow-wrap: anywhere; }
+
+  .od-screen { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: 100%; }
+  .od-scroll { overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
+
+  .od-rail { display: flex; gap: var(--od-gap, 8px); overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none;
+             padding-inline: var(--od-rail-pad, 16px); scroll-padding-inline: var(--od-rail-pad, 16px); }
+  .od-rail::-webkit-scrollbar { display: none; }
+  :where(.od-rail) > :where(*) { flex: none; scroll-snap-align: start; }
+  :where(.od-rail) > :where(:last-child) { margin-inline-end: var(--od-rail-pad, 16px); }
+
+  .od-spacer { flex: none; visibility: hidden; pointer-events: none; }
+  .od-touch  { min-width: 44px; min-height: 44px; }
+}
+:root [hidden]:where(:not([hidden="until-found" i])) { display: none; }
+/* /OD-LAYOUT-PRIMITIVES v1 */
+
+/* ───────── Tokens ───────── */
+@property --angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+:root {
+  --font-display: "Be Vietnam Pro", system-ui, sans-serif;
+  --font-body: "Be Vietnam Pro", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --fs-xs: 0.8125rem; --fs-sm: 0.9375rem; --fs-base: 1.0625rem; --fs-lg: 1.25rem;
+  --fs-xl: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  --fs-2xl: clamp(2.125rem, 1.4rem + 2.6vw, 3.5rem);
+  --fs-hero: clamp(2.75rem, 1.4rem + 5.2vw, 6rem);
+  --fs-mega: clamp(3rem, 1.2rem + 7vw, 8rem);
+
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px;
+  --s-6: 32px; --s-7: 48px; --s-8: 64px; --s-9: 96px; --s-10: 128px;
+
+  --radius-sm: 8px; --radius: 14px; --radius-lg: 24px;
+  --maxw: 1240px; --nav-h: 68px;
+
+  --dur-fast: 180ms; --dur: 280ms; --dur-slow: 400ms;
+  --ease-out: cubic-bezier(.16,1,.3,1); --ease-in: cubic-bezier(.4,0,1,1);
+}
+[data-theme="dark"] {
+  --bg: #0a0d0f; --bg-2: #0f1417; --surface: #141b1f; --surface-2: #1b2429; --line: #253238;
+  --text: #ecf1f3; --muted: #9eabb1;
+  --accent: #2dd4bf; --accent-2: #5eead4; --accent-ink: #04211d; --accent-soft: rgba(45,212,191,.12);
+  --glow: rgba(45,212,191,.22); --dot: rgba(236,241,243,.07);
+  --focus: #7af0e0;
+  color-scheme: dark;
+}
+[data-theme="light"] {
+  --bg: #f4f6f6; --bg-2: #eaeeef; --surface: #ffffff; --surface-2: #eff2f3; --line: #d3dadd;
+  --text: #0d1214; --muted: #47535a;
+  --accent: #0b6e64; --accent-2: #0f766e; --accent-ink: #ffffff; --accent-soft: rgba(11,110,100,.10);
+  --glow: rgba(15,118,110,.16); --dot: rgba(13,18,20,.08);
+  --focus: #0b6e64;
+  color-scheme: light;
+}
+
+/* ───────── Base ───────── */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + var(--s-4)); }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: var(--font-body); font-size: var(--fs-base); line-height: 1.6;
+  -webkit-font-smoothing: antialiased; overflow-x: clip;
+  transition: background-color var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
+}
+img { max-width: 100%; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.08; margin: 0; letter-spacing: -0.03em; text-wrap: balance; }
+p { margin: 0; text-wrap: pretty; }
+a { color: inherit; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+::selection { background: var(--accent); color: var(--accent-ink); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
+.skip { position: absolute; left: var(--s-4); top: -100px; background: var(--accent); color: var(--accent-ink); padding: var(--s-2) var(--s-4); border-radius: var(--radius-sm); z-index: 200; font-weight: 600; text-decoration: none; }
+.skip:focus { top: var(--s-3); }
+.wrap { width: min(100% - 2 * var(--s-5), var(--maxw)); margin-inline: auto; }
+.mono { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 0.02em; }
+.muted { color: var(--muted); }
+.grad-text { background: linear-gradient(100deg, var(--accent) 0%, var(--accent-2) 50%, var(--text) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* progress */
+.progress { position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 120; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); }
+
+/* ───────── Nav ───────── */
+.nav { position: sticky; top: 0; z-index: 100; height: var(--nav-h);
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px);
+  border-bottom: 1px solid transparent; transition: border-color var(--dur) var(--ease-out); }
+.nav.scrolled { border-bottom-color: var(--line); }
+.nav .wrap { height: 100%; }
+.brand { display: inline-flex; align-items: center; gap: var(--s-2); font-family: var(--font-mono); font-size: var(--fs-sm); font-weight: 500; text-decoration: none; white-space: nowrap; }
+.brand-mark { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font: 800 14px/1 var(--font-display); letter-spacing: -0.04em; }
+.nav-links { display: flex; gap: 2px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--surface) 60%, transparent); }
+.nav-links a { text-decoration: none; color: var(--muted); font-size: var(--fs-sm); font-weight: 500; padding: 6px var(--s-4); border-radius: 999px;
+  transition: color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out); }
+.nav-links a[aria-current="true"] { color: var(--accent-ink); background: var(--accent); }
+.ctrl { display: inline-flex; align-items: center; justify-content: center; gap: var(--s-1); min-width: 44px; min-height: 40px; padding: 0 var(--s-3);
+  border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--text); font: 500 var(--fs-xs)/1 var(--font-mono); cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out); }
+.lang-opt { color: var(--muted); }
+.lang-opt[data-active="true"] { color: var(--accent); }
+.menu-btn { display: none; }
+@media (hover: hover) {
+  .nav-links a:not([aria-current="true"]):hover { color: var(--text); background: var(--surface-2); }
+  .ctrl:hover { border-color: var(--accent); background: var(--accent-soft); }
+}
+.mobile-menu { position: fixed; inset: var(--nav-h) 0 auto 0; z-index: 99; background: var(--bg); border-bottom: 1px solid var(--line); padding: var(--s-3) 0 var(--s-5); }
+.mobile-menu a { display: block; padding: var(--s-3) 0; font-size: var(--fs-lg); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--line); }
+
+/* ───────── Buttons ───────── */
+.btn { position: relative; display: inline-flex; align-items: center; gap: var(--s-2); min-height: 52px; padding: 0 var(--s-6);
+  border-radius: 999px; font: 600 var(--fs-sm)/1 var(--font-body); text-decoration: none; cursor: pointer; border: 1px solid transparent;
+  transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), box-shadow var(--dur) var(--ease-out); }
+.btn .od-icon { --od-icon-size: 18px; transition: transform var(--dur) var(--ease-out); }
+.btn-primary { background: var(--accent); color: var(--accent-ink); box-shadow: 0 10px 30px -10px var(--glow); }
+.btn-ghost { background: transparent; color: var(--text); border-color: var(--line); }
+@media (hover: hover) {
+  .btn-primary:hover { box-shadow: 0 14px 44px -8px var(--glow); }
+  .btn-primary:hover .od-icon { transform: translateX(3px); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+}
+.magnet { transition: transform var(--dur) var(--ease-out); will-change: transform; }
+
+/* ───────── Section scaffolding ───────── */
+section { padding-block: var(--s-10); position: relative; }
+.sec-head { display: grid; gap: var(--s-4); margin-bottom: var(--s-8); max-width: 780px; }
+.eyebrow { display: inline-flex; align-items: center; gap: var(--s-2); font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; }
+.eyebrow::before { content: ""; width: 24px; height: 1px; background: currentColor; }
+.sec-head h2 { font-size: var(--fs-2xl); }
+.sec-head p { color: var(--muted); font-size: var(--fs-lg); line-height: 1.6; }
+.chip { display: inline-flex; align-items: center; min-height: 28px; padding: 0 var(--s-3); border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font-family: var(--font-mono); font-size: var(--fs-xs); white-space: nowrap; }
+.chip.on { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); background: var(--accent-soft); }
+
+/* ───────── Hero ───────── */
+.hero { padding-block: var(--s-8) var(--s-9); overflow: clip; isolation: isolate; }
+.hero::before { /* dot grid */
+  content: ""; position: absolute; inset: 0; z-index: -2;
+  background-image: radial-gradient(var(--dot) 1px, transparent 1px); background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 30%, transparent 75%);
+}
+.hero::after { /* pointer spotlight */
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(520px circle at var(--mx, 70%) var(--my, 30%), var(--glow), transparent 60%);
+  transition: background-position var(--dur) var(--ease-out);
+}
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.85fr); gap: var(--s-8); align-items: center; }
+.status { display: inline-flex; align-items: center; gap: var(--s-2); padding: 6px var(--s-3) 6px 6px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: color-mix(in srgb, var(--surface) 70%, transparent); text-decoration: none; }
+.status img { width: 24px; height: 24px; border-radius: 6px; }
+.status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; position: relative; }
+.status .dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--accent); animation: ping 1.8s var(--ease-out) infinite; }
+@keyframes ping { 0% { transform: scale(1); opacity: .7; } 80%, 100% { transform: scale(2.8); opacity: 0; } }
+.hero h1 { font-size: var(--fs-hero); font-weight: 800; margin-top: var(--s-5); letter-spacing: -0.045em; line-height: 1.02; }
+.line { display: block; overflow: hidden; padding-bottom: 0.06em; }
+.line-in { display: inline-block; }
+.js .line-in { transform: translateY(105%); animation: lineUp 900ms var(--ease-out) forwards; animation-delay: calc(120ms + var(--d, 0) * 110ms); }
+@keyframes lineUp { to { transform: none; } }
+.hero .lede { margin-top: var(--s-5); font-size: var(--fs-lg); color: var(--muted); max-width: 56ch; line-height: 1.65; }
+.hero .lede strong { color: var(--text); font-weight: 600; }
+.js .fade-up { opacity: 0; transform: translateY(18px); animation: fadeUp 800ms var(--ease-out) forwards; animation-delay: calc(400ms + var(--d, 0) * 100ms); }
+@keyframes fadeUp { to { opacity: 1; transform: none; } }
+.hero-cta { margin-top: var(--s-6); --od-gap: var(--s-3); }
+.stats { margin-top: var(--s-7); --od-cols: 3; --od-gap: var(--s-4); }
+.stat { padding: var(--s-4) var(--s-5); border: 1px solid var(--line); border-radius: var(--radius); background: color-mix(in srgb, var(--surface) 70%, transparent); }
+.stat-num { font-family: var(--font-display); font-size: clamp(2rem, 1.4rem + 1.8vw, 3rem); font-weight: 800; line-height: 1; letter-spacing: -0.04em; white-space: nowrap; }
+.stat-num .plus { color: var(--accent); }
+.stat-cap { color: var(--muted); font-size: var(--fs-sm); line-height: 1.4; margin-top: var(--s-2); }
+
+.portrait-wrap { position: relative; }
+.portrait { position: relative; margin: 0; padding: 2px; border-radius: calc(var(--radius-lg) + 2px);
+  background: conic-gradient(from var(--angle), transparent 0deg, var(--accent) 60deg, transparent 140deg, transparent 220deg, var(--accent-2) 300deg, transparent 360deg);
+  animation: spin 7s linear infinite; }
+@keyframes spin { to { --angle: 360deg; } }
+.portrait img { border-radius: var(--radius-lg); filter: grayscale(1) contrast(1.05); background: var(--surface); }
+.float-card { position: absolute; display: flex; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--s-4) var(--s-3) var(--s-3);
+  border: 1px solid var(--line); border-radius: var(--radius); background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 20px 40px -20px rgba(0,0,0,.5);
+  animation: float 6s ease-in-out infinite; }
+.float-card img { width: 40px; height: 40px; border-radius: 10px; flex: none; }
+.fc-text { display: grid; gap: 2px; }
+.fc-text strong { display: block; font-size: var(--fs-sm); white-space: nowrap; }
+.fc-text span { display: block; color: var(--muted); font-size: var(--fs-xs); white-space: nowrap; }
+.fc-1 { left: -18%; bottom: 14%; }
+.fc-2 { right: -10%; top: 8%; animation-delay: -3s; }
+.fc-2 .od-icon { --od-icon-size: 22px; color: var(--accent); }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.cap-row { margin-top: var(--s-3); display: flex; justify-content: space-between; gap: var(--s-3); color: var(--muted); }
+
+/* marquee */
+.marquee { border-block: 1px solid var(--line); background: var(--bg-2); padding-block: var(--s-5); overflow: hidden; }
+.marquee-track { display: flex; width: max-content; animation: marquee 40s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee ul { display: flex; align-items: center; gap: var(--s-7); padding-right: var(--s-7); }
+.marquee li { display: inline-flex; align-items: center; gap: var(--s-7); font: 700 clamp(1.25rem, 1rem + 1vw, 1.75rem)/1 var(--font-display); letter-spacing: -0.02em; color: var(--muted); white-space: nowrap; }
+.marquee li::after { content: "\2726"; font-size: 0.6em; color: var(--accent); }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* ───────── Case: IVB Biz+ ───────── */
+.case-intro { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: var(--s-7); align-items: end; margin-bottom: var(--s-8); }
+.case-intro h2 { font-size: var(--fs-mega); letter-spacing: -0.05em; line-height: 0.95; font-weight: 800; }
+.case-intro h2 .sub { display: block; font-size: var(--fs-xl); letter-spacing: -0.02em; font-weight: 600; color: var(--muted); margin-top: var(--s-4); line-height: 1.3; }
+.case-side { display: grid; gap: var(--s-5); }
+.app-id { display: flex; align-items: center; gap: var(--s-4); }
+.app-id img { width: 64px; height: 64px; border-radius: 16px; border: 1px solid var(--line); flex: none; }
+.app-id-text { display: grid; gap: 2px; }
+.app-id-text strong { display: block; font-size: var(--fs-lg); }
+.app-id-text span { display: block; color: var(--muted); font-size: var(--fs-sm); }
+.stores { --od-gap: var(--s-3); }
+.store { display: inline-flex; align-items: center; gap: var(--s-3); min-height: 52px; padding: 0 var(--s-5) 0 var(--s-4); border-radius: var(--radius-sm);
+  background: var(--text); color: var(--bg); text-decoration: none; transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur) var(--ease-out); }
+.store .od-icon { --od-icon-size: 24px; }
+.store-text { display: grid; line-height: 1.1; }
+.store-text small { display: block; font-size: 10px; opacity: .75; }
+.store-text strong { display: block; font-size: var(--fs-base); font-weight: 600; }
+@media (hover: hover) { .store:hover { transform: translateY(-2px); box-shadow: 0 12px 30px -12px var(--glow); } }
+.facts { --od-cols: 2; --od-gap: var(--s-3); max-width: 420px; }
+.fact { padding: var(--s-3) var(--s-4); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.fact span:first-child { color: var(--muted); }
+.fact strong { font-size: var(--fs-sm); }
+
+  box-shadow: 0 40px 80px -30px rgba(0,0,0,.6);
+  opacity: 0; transform: translateY(24px) scale(.96) rotate(-1.5deg);
+  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
+
+
+.gallery-head { display: flex; justify-content: space-between; align-items: end; gap: var(--s-4); margin: 0 0 var(--s-5); }
+.gallery-head h3 { font-size: var(--fs-xl); }
+.gallery { --od-gap: var(--s-4); --od-rail-pad: max(var(--s-5), calc((100vw - var(--maxw)) / 2)); padding-block: var(--s-3) var(--s-5); cursor: grab; }
+.g-item { width: clamp(200px, 22vw, 260px); padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: 20px; text-align: left; color: inherit; font: inherit; }
+.g-item figure { margin: 0; border-radius: 20px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); transition: transform var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out); }
+.g-item figcaption { margin-top: var(--s-2); color: var(--muted); }
+@media (hover: hover) { .g-item:hover figure { transform: translateY(-6px); border-color: var(--accent); } }
+
+.eco { margin-top: var(--s-9); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-4); position: relative; }
+.eco-node { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--s-6) var(--s-5); display: grid; gap: var(--s-3); align-content: start; overflow: hidden; }
+.eco-node .od-icon { --od-icon-size: 32px; color: var(--accent); }
+.eco-node h3 { font-size: var(--fs-lg); }
+.eco-node p { color: var(--muted); font-size: var(--fs-sm); line-height: 1.6; }
+.eco-node .tagline { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--accent); }
+.eco-wire { height: 2px; margin-top: var(--s-4); border-radius: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); background-size: 200% 100%; animation: wire 3s linear infinite; }
+@keyframes wire { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.eco-foot { margin-top: var(--s-4); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-4); }
+.bus { border: 1px dashed color-mix(in srgb, var(--accent) 50%, var(--line)); border-radius: var(--radius); padding: var(--s-4) var(--s-5); display: flex; align-items: center; gap: var(--s-3); }
+.bus .od-icon { --od-icon-size: 22px; color: var(--accent); }
+.bus-text { display: grid; gap: 2px; }
+.bus-text strong { display: block; font-size: var(--fs-sm); }
+.bus-text span { display: block; color: var(--muted); font-size: var(--fs-sm); }
+
+/* lightbox */
+.lightbox { border: 0; padding: 0; background: transparent; max-width: none; max-height: none; width: 100vw; height: 100vh; margin: 0; }
+.lightbox::backdrop { background: rgba(4,7,8,.86); backdrop-filter: blur(6px); }
+.lb-inner { width: 100%; height: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--s-4); padding: var(--s-6); }
+.lb-figure { margin: 0; height: 100%; display: grid; place-items: center; min-height: 0; }
+.lb-figure img { max-height: calc(100vh - 2 * var(--s-8)); width: auto; max-width: 100%; height: auto; border-radius: 24px; border: 1px solid #2a363c; animation: lbIn var(--dur) var(--ease-out); }
+@keyframes lbIn { from { opacity: 0; transform: scale(.96); } }
+.lb-btn { width: 52px; height: 52px; border-radius: 50%; border: 1px solid #33424a; background: #141b1f; color: #ecf1f3; display: grid; place-items: center; cursor: pointer; }
+.lb-btn .od-icon { --od-icon-size: 22px; }
+.lb-close { position: absolute; top: var(--s-5); right: var(--s-5); }
+.lb-count { position: absolute; bottom: var(--s-5); left: 50%; transform: translateX(-50%); color: #b5c2c7; }
+@media (hover: hover) { .lb-btn:hover { border-color: #2dd4bf; color: #2dd4bf; } }
+
+/* ───────── Case: Cathay ───────── */
+.cathay { padding-top: 0; }
+.ca-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr); gap: var(--s-8); align-items: center; }
+.ca-browser { border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); overflow: hidden; box-shadow: 0 40px 80px -40px rgba(0,0,0,.55); transform: perspective(1400px) rotateY(-6deg) rotateX(2deg); transition: transform var(--dur-slow) var(--ease-out); }
+@media (hover: hover) { .ca-browser:hover { transform: none; } }
+.ca-bar { display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.ca-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); flex: none; }
+.ca-url { margin-left: 8px; flex: 1; min-width: 0; padding: 4px 10px; border-radius: 6px; background: var(--bg); color: var(--muted); font-family: var(--font-mono); font-size: var(--fs-xs); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ca-browser img { display: block; }
+.ca-cap { margin-top: var(--s-3); color: var(--muted); }
+.ca-side { display: grid; gap: var(--s-5); }
+.ca-side h2 { font-size: var(--fs-2xl); font-weight: 800; letter-spacing: -0.04em; }
+.ca-side .sub { color: var(--muted); font-size: var(--fs-lg); }
+.ca-parts { display: grid; gap: var(--s-3); }
+.ca-part { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: var(--s-3); padding: var(--s-4); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.ca-part .od-icon { --od-icon-size: 24px; color: var(--accent); margin-top: 2px; }
+.ca-part-text { display: grid; gap: var(--s-1); }
+.ca-part-text strong { display: block; }
+.ca-part-text span { display: block; color: var(--muted); font-size: var(--fs-sm); line-height: 1.55; }
+.ca-side .od-cluster { --od-gap: var(--s-2); }
+.cv-ctrl { gap: 6px; text-decoration: none; }
+
+/* ───────── Projects ───────── */
+.filters { --od-gap: var(--s-2); margin-bottom: var(--s-6); }
+.filter { min-height: 44px; padding: 0 var(--s-5); border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); font: 500 var(--fs-sm)/1 var(--font-body); cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out); }
+.filter .count { font-family: var(--font-mono); font-size: var(--fs-xs); margin-left: var(--s-1); }
+.filter[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+@media (hover: hover) { .filter:hover:not([aria-pressed="true"]) { color: var(--text); border-color: var(--accent); } }
+.proj-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-4); }
+.tilt { position: relative; transform-style: preserve-3d; transition: transform var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out); will-change: transform; }
+.tilt::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0;
+  background: radial-gradient(360px circle at var(--px, 50%) var(--py, 50%), var(--glow), transparent 60%); transition: opacity var(--dur) var(--ease-out); }
+.tilt.hot::after { opacity: 1; }
+.tilt.hot { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
+.proj { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--s-6) var(--s-5); display: grid; grid-template-rows: auto auto 1fr auto; gap: var(--s-3); }
+.proj-top { display: flex; justify-content: space-between; align-items: center; gap: var(--s-3); }
+.proj-org, .proj-year { color: var(--muted); }
+.proj-year { white-space: nowrap; }
+.proj h3 { font-size: var(--fs-lg); }
+.proj p { color: var(--muted); font-size: var(--fs-sm); line-height: 1.6; }
+.proj .tags { --od-gap: 6px; }
+.proj .tags .chip { min-height: 24px; padding: 0 var(--s-2); }
+.proj.enter { animation: rise 500ms var(--ease-out) both; animation-delay: calc(var(--i, 0) * 45ms); }
+/* card hover (CSS-only, works without the JS tilt) */
+.tilt { overflow: hidden; transition: transform var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out), background-color var(--dur) var(--ease-out); }
+.tilt::before { content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transform: scaleX(0); transform-origin: 0 50%; transition: transform var(--dur-slow) var(--ease-out); pointer-events: none; }
+.tilt h3 { transition: color var(--dur) var(--ease-out); }
+.tilt .chip { transition: border-color var(--dur) var(--ease-out), color var(--dur) var(--ease-out); }
+@media (hover: hover) {
+  .tilt:hover, .js .tilt.reveal.in:hover { transform: translateY(-6px); border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); background: color-mix(in srgb, var(--accent) 4%, var(--surface)); box-shadow: 0 24px 48px -24px var(--glow), 0 12px 24px -16px rgba(0,0,0,.45); }
+  .tilt:hover::before { transform: scaleX(1); }
+  .tilt:hover h3 { color: var(--accent); }
+  .tilt:hover .chip { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); color: var(--text); }
+  .tilt:hover::after { opacity: 1; }
+}
+/* staggered entrance when the grid scrolls into view (and after each filter) */
+.js .proj-grid:not(.shown) .proj { opacity: 0; transform: translateY(28px); }
+.js .proj-grid.shown .proj { animation: rise 600ms var(--ease-out) backwards; animation-delay: calc(var(--i, 0) * 70ms); }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.more { margin-top: var(--s-5); color: var(--muted); font-size: var(--fs-sm); }
+.more strong { color: var(--text); font-weight: 600; }
+
+/* ───────── Skills ───────── */
+.alt { background: var(--bg-2); border-block: 1px solid var(--line); }
+.skills { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-4); }
+.skill { border: 1px solid var(--line); border-radius: var(--radius); padding: var(--s-7) var(--s-5) var(--s-6); display: grid; gap: var(--s-4); align-content: start; background: var(--surface); }
+.skill-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+.skill-head .od-icon { --od-icon-size: 32px; color: var(--accent); }
+.skill-idx { color: var(--muted); }
+.skill h3 { font-size: var(--fs-xl); }
+.skill p { color: var(--muted); font-size: var(--fs-sm); }
+.skill .od-cluster { --od-gap: 6px; }
+.skill .chip.on { color: var(--text); }
+
+/* ───────── Experience ───────── */
+.timeline { position: relative; display: grid; padding-left: var(--s-7); }
+.timeline::before { content: ""; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--line); border-radius: 2px; }
+.tl-fill { position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--accent); border-radius: 2px; transform-origin: 50% 0; transform: scaleY(var(--tl, 0)); box-shadow: 0 0 12px var(--glow); }
+.job { position: relative; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: var(--s-6); padding-block: var(--s-6); }
+.job::before { content: ""; position: absolute; left: calc(-1 * var(--s-7) + 1px); top: calc(var(--s-6) + 6px); width: 14px; height: 14px; border-radius: 50%; background: var(--bg); border: 2px solid var(--line); transition: border-color var(--dur) var(--ease-out), background-color var(--dur) var(--ease-out); }
+.job.lit::before { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft); }
+.job-when { display: grid; gap: var(--s-1); align-content: start; }
+.job-when .mono { color: var(--accent); white-space: nowrap; }
+.job-when span:last-child { color: var(--muted); font-size: var(--fs-sm); }
+.job-body { display: grid; gap: var(--s-2); }
+.job-body h3 { font-size: var(--fs-xl); }
+.job-role { color: var(--muted); font-size: var(--fs-sm); }
+.job-body p { color: var(--muted); max-width: 68ch; }
+.job-body .od-cluster { --od-gap: 6px; margin-top: var(--s-2); }
+.edu { margin-top: var(--s-6); display: flex; gap: var(--s-4); align-items: center; padding: var(--s-5); border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.edu .od-icon { --od-icon-size: 28px; color: var(--accent); }
+.edu-text { display: grid; gap: 2px; }
+.edu-text strong { display: block; }
+.edu-text span { display: block; color: var(--muted); font-size: var(--fs-sm); }
+
+/* ───────── About ───────── */
+.about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-8); align-items: start; }
+.big { font-size: var(--fs-xl); line-height: 1.45; font-weight: 500; letter-spacing: -0.015em; }
+.big em { font-style: normal; color: var(--accent); }
+.about-list { display: grid; gap: var(--s-4); }
+.about-list li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: var(--s-3); color: var(--muted); }
+.about-list .od-icon { --od-icon-size: 20px; color: var(--accent); margin-top: 3px; }
+.about-list strong { color: var(--text); font-weight: 600; }
+
+/* ───────── Contact ───────── */
+.contact { overflow: clip; isolation: isolate; }
+.contact::before { content: ""; position: absolute; inset: auto -10% -40% -10%; height: 80%; z-index: -1; background: radial-gradient(ellipse at 50% 100%, var(--glow), transparent 65%); }
+.contact h2 { font-size: var(--fs-mega); font-weight: 800; letter-spacing: -0.055em; line-height: .95; margin-top: var(--s-4); }
+.contact .lede { color: var(--muted); font-size: var(--fs-lg); margin-top: var(--s-5); max-width: 56ch; }
+.contact-cta { margin-top: var(--s-6); --od-gap: var(--s-3); }
+.contact-grid { margin-top: var(--s-8); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s-3); }
+.c-card { display: grid; gap: var(--s-1); padding: var(--s-5); border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); text-decoration: none; color: var(--text); }
+.c-card .od-icon { --od-icon-size: 24px; color: var(--accent); margin-bottom: var(--s-3); }
+.c-label { display: block; font-weight: 600; }
+.c-val { display: block; color: var(--muted); font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.toast { color: var(--accent); }
+
+footer { padding-block: var(--s-6); border-top: 1px solid var(--line); color: var(--muted); font-size: var(--fs-sm); }
+footer .wrap { display: flex; justify-content: space-between; gap: var(--s-4); flex-wrap: wrap; }
+.ft-right { display: inline-flex; align-items: center; gap: var(--s-5); flex-wrap: wrap; }
+.ft-top { display: inline-flex; align-items: center; gap: var(--s-2); color: var(--text); font-weight: 500; text-decoration: none; min-height: 44px; }
+.ft-top .od-icon { --od-icon-size: 16px; transform: rotate(-90deg); transition: transform var(--dur) var(--ease-out); }
+@media (hover: hover) { .ft-top:hover { color: var(--accent); } .ft-top:hover .od-icon { transform: rotate(-90deg) translateX(3px); } }
+
+/* reveal */
+.js .reveal { opacity: 0; transform: translateY(28px); transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out); transition-delay: calc(var(--d, 0) * 80ms); }
+.js .reveal.in { opacity: 1; transform: none; }
+
+/* cursor ring (fine pointers only) */
+.cursor { position: fixed; left: 0; top: 0; width: 32px; height: 32px; margin: -16px 0 0 -16px; border: 1.5px solid var(--accent); border-radius: 50%; pointer-events: none; z-index: 150; opacity: 0;
+  transition: opacity var(--dur) var(--ease-out), width var(--dur) var(--ease-out), height var(--dur) var(--ease-out), margin var(--dur) var(--ease-out), background-color var(--dur) var(--ease-out); }
+.cursor.on { opacity: .8; }
+.cursor.big { width: 56px; height: 56px; margin: -28px 0 0 -28px; background: var(--accent-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; animation-delay: 0ms !important; transition-duration: 1ms !important; }
+  .js .reveal, .js .fade-up { opacity: 1; transform: none; }
+  .js .line-in { transform: none; }
+  .marquee-track { animation: none; }
+  .cursor { display: none; }
+}
+
+/* ───────── Responsive ───────── */
+@media (max-width: 1100px) {
+  .nav-links { display: none; }
+  .menu-btn { display: inline-flex; }
+  .fc-1 { left: -6%; }
+  .fc-2 { right: -4%; }
+}
+@media (max-width: 1024px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr); gap: var(--s-6); }
+  .case-intro { grid-template-columns: minmax(0, 1fr); }
+  .proj-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .contact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .facts { --od-cols: 2; }
+}
+@media (max-width: 900px) {
+  .ca-grid { grid-template-columns: minmax(0, 1fr); gap: var(--s-6); }
+  .ca-browser { transform: none; }
+}
+@media (max-width: 768px) {
+  section { padding-block: var(--s-9); }
+  .hero { padding-top: var(--s-6); }
+  .hero-grid { grid-template-columns: minmax(0, 1fr); }
+  .portrait-wrap { order: -1; max-width: 300px; }
+  .fc-1 { left: 12px; right: auto; bottom: 40px; }
+  .fc-2 { display: none; }
+  .eco, .skills { grid-template-columns: minmax(0, 1fr); }
+  .eco-foot { grid-template-columns: minmax(0, 1fr); }
+  .about-grid { grid-template-columns: minmax(0, 1fr); gap: var(--s-6); }
+  .job { grid-template-columns: minmax(0, 1fr); gap: var(--s-3); }
+  .lb-inner { grid-template-columns: minmax(0, 1fr); padding: var(--s-8) var(--s-4); }
+  .lb-prev, .lb-next { display: none; }
+}
+@media (max-width: 560px) {
+  .wrap { width: min(100% - 2 * var(--s-4), var(--maxw)); }
+  .stats { --od-cols: 3; --od-gap: var(--s-2); }
+  .stat { padding: var(--s-3); }
+  .proj-grid, .contact-grid { grid-template-columns: minmax(0, 1fr); }
+  .timeline { padding-left: var(--s-6); }
+  .job::before { left: calc(-1 * var(--s-6) + 1px); }
+  .brand-name { display: none; }
+}
+@media (min-width: 1101px) { .mobile-menu { display: none !important; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+<div class="progress" id="progress" aria-hidden="true"></div>
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></symbol>
+    <symbol id="i-admin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
+    <symbol id="i-server" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 4l-3 16"/></symbol>
+    <symbol id="i-cap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5L2 9z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></symbol>
+    <symbol id="i-team" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.5 3.3-5.5 6.5-5.5s5.9 2 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.5 3.5 5.2"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5l8.5 6 8.5-6"/></symbol>
+    <symbol id="i-linkedin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10.5V16M8 7.5v.01M12 16v-5.5M12 13c0-1.7 1-2.7 2.4-2.7S16.5 11.3 16.5 13v3"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+    <symbol id="i-copy"viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15c-1.5 1.3-2 4-2 6 2 0 4.7-.5 6-2"/><path d="M9 15l-3-3c1.5-5 5.5-9 13-9 0 7.5-4 11.5-9 13l-1-1z"/><circle cx="15" cy="9" r="1.5"/></symbol>
+    <symbol id="i-apple" viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.6-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 2.9-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.4c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3.2v17.6c0 .8.9 1.3 1.6.9l14.5-8.8c.6-.4.6-1.3 0-1.7L6.6 2.3C5.9 1.9 5 2.4 5 3.2z"/></symbol>
+  </defs>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="wrap od-row" style="justify-content: space-between;">
+    <a class="brand" href="#top" aria-label="Nguyễn Tài Anh — home"><span class="brand-mark" aria-hidden="true">TA</span><span class="brand-name">nguyentaianh</span></a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#work" data-i18n="nav.work">IVB Biz+</a>
+      <a href="#projects" data-i18n="nav.projects">Projects</a>
+      <a href="#skills" data-i18n="nav.skills">Skills</a>
+      <a href="#experience" data-i18n="nav.exp">Experience</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
+    </nav>
+    <div class="od-row" style="--od-gap: 8px;">
+      <a class="ctrl cv-ctrl" href="cv/Nguyen-Tai-Anh-CV.pdf" download><svg class="od-icon" style="--od-icon-size:16px" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cv.short">CV</span></a>
+      <button class="ctrl" id="langBtn" type="button" aria-label="Switch language / Chuyển ngôn ngữ">
+        <span class="lang-opt" data-lang-opt="en">EN</span><span aria-hidden="true" class="muted">/</span><span class="lang-opt" data-lang-opt="vi">VI</span>
+      </button>
+      <button class="ctrl" id="themeBtn" type="button" aria-label="Toggle light / dark">
+        <svg class="od-icon" style="--od-icon-size:18px" aria-hidden="true"><use href="#i-sun"/></svg>
+      </button>
+      <button class="ctrl menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+        <svg class="od-icon" style="--od-icon-size:18px" aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="mobile-menu" id="mobileMenu" hidden>
+  <div class="wrap">
+    <a href="#work" data-i18n="nav.work">IVB Biz+</a>
+    <a href="#projects" data-i18n="nav.projects">Projects</a>
+    <a href="#skills" data-i18n="nav.skills">Skills</a>
+    <a href="#experience" data-i18n="nav.exp">Experience</a>
+    <a href="#contact" data-i18n="nav.contact">Contact</a>
+    <a href="cv/Nguyen-Tai-Anh-CV.pdf" download><span data-i18n="cv.dl">Download CV</span></a>
+  </div>
+</div>
+
+<main id="main">
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <a class="status mono fade-up" href="#work" style="--d:0">
+          <img src="assets/ivbbiz/icon.jpg" width="256" height="256" alt="">
+          <span class="dot" aria-hidden="true"></span>
+          <span data-i18n="hero.status">Now shipping IVB Biz+ · TPIsoftware</span>
+        </a>
+        <h1>
+          <span class="line"><span class="line-in" style="--d:0" data-i18n="hero.h1a">I build banking apps</span></span>
+          <span class="line"><span class="line-in grad-text" style="--d:1" data-i18n="hero.h1b">people actually use.</span></span>
+        </h1>
+        <p class="lede fade-up" style="--d:1" data-i18n-html="hero.lede">I'm <strong>Nguyễn Tài Anh</strong>, a Mobile &amp; Web Developer with 8+ years of experience. I build <strong>IVB Biz+</strong>, Indovina Bank's business banking app on the App Store and Google Play, along with its web portal and admin system, using <strong>React Native (Expo)</strong> and <strong>ReactJS</strong>. Years of <strong>Laravel</strong> backend work mean I understand both sides of the API.</p>
+        <div class="hero-cta od-cluster fade-up" style="--d:2">
+          <a class="btn btn-primary magnet" href="#work"><span data-i18n="hero.cta1">See IVB Biz+</span><svg class="od-icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="btn btn-ghost magnet" href="cv/Nguyen-Tai-Anh-CV.pdf" download><svg class="od-icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cv.dl">Download CV</span></a>
+        </div>
+        <div class="stats od-grid fade-up" style="--d:3">
+          <div class="stat od-stat"><span class="stat-num"><span data-count="8">8</span><span class="plus">+</span></span><span class="stat-cap" data-i18n="stat.years">years in web &amp; app</span></div>
+          <div class="stat od-stat"><span class="stat-num"><span data-count="14">14</span></span><span class="stat-cap" data-i18n="stat.projects">shipped projects</span></div>
+          <div class="stat od-stat"><span class="stat-num"><span data-count="4">4</span><span class="plus">+</span></span><span class="stat-cap" data-i18n="stat.fintech">years in finance &amp; banking</span></div>
+        </div>
+      </div>
+      <div class="portrait-wrap fade-up" style="--d:1">
+        <figure class="portrait">
+          <img class="od-media" src="assets/portrait.jpg" width="800" height="1200" alt="Portrait of Nguyễn Tài Anh in a blazer and glasses" data-i18n-alt="hero.alt">
+        </figure>
+        <div class="float-card fc-1">
+          <img src="assets/ivbbiz/icon.jpg" width="256" height="256" alt="IVB Biz+ app icon">
+          <div class="fc-text"><strong>IVB Biz+</strong><span data-i18n="fc1">Live on App Store &amp; Play</span></div>
+        </div>
+        <div class="float-card fc-2">
+          <svg class="od-icon" aria-hidden="true"><use href="#i-code"/></svg>
+          <div class="fc-text"><strong>React Native</strong><span>Expo · ReactJS · Vite</span></div>
+        </div>
+        <div class="cap-row mono"><span>Nguyễn Tài Anh</span><span data-i18n="hero.loc">Ho Chi Minh City</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <ul><li>React Native</li><li>Expo</li><li>ReactJS</li><li>Vite</li><li>TypeScript</li><li>Indovina Bank</li><li>Cathay Insurance</li><li>Laravel</li><li>Next.js</li><li>Fastlane</li><li>Docker</li><li>Angular</li><li>Ionic</li></ul>
+      <ul><li>React Native</li><li>Expo</li><li>ReactJS</li><li>Vite</li><li>TypeScript</li><li>Indovina Bank</li><li>Cathay Insurance</li><li>Laravel</li><li>Next.js</li><li>Fastlane</li><li>Docker</li><li>Angular</li><li>Ionic</li></ul>
+    </div>
+  </div>
+
+  <!-- CASE: IVB BIZ+ -->
+  <section id="work" aria-labelledby="case-title">
+    <div class="wrap">
+      <div class="case-intro">
+        <div class="reveal">
+          <span class="eyebrow" data-i18n="case.eyebrow">Featured case · 2022 — now</span>
+          <h2 id="case-title"><span class="grad-text">IVB Biz+</span><span class="sub" data-i18n="case.sub">Digital banking for businesses, built for Indovina Bank. Live on iOS and Android.</span></h2>
+        </div>
+        <div class="case-side reveal" style="--d:1">
+          <div class="app-id">
+            <img src="assets/ivbbiz/icon.jpg" width="256" height="256" alt="IVB Biz+ app icon">
+            <div class="app-id-text"><strong>IVB Biz+</strong><span>Indovina Bank · Finance</span></div>
+          </div>
+          <div class="stores od-cluster">
+            <a class="store magnet" href="https://apps.apple.com/us/app/ivb-biz/id6755763189" target="_blank" rel="noopener">
+              <svg class="od-icon" aria-hidden="true"><use href="#i-apple"/></svg>
+              <span class="store-text"><small data-i18n="st.apple.s">Download on the</small><strong>App Store</strong></span>
+            </a>
+            <a class="store magnet" href="https://play.google.com/store/apps/details?id=vn.com.indovinabank.ivbbizplus" target="_blank" rel="noopener">
+              <svg class="od-icon" aria-hidden="true"><use href="#i-play"/></svg>
+              <span class="store-text"><small data-i18n="st.play.s">Get it on</small><strong>Google Play</strong></span>
+            </a>
+          </div>
+          <div class="facts od-grid">
+            <div class="fact od-field"><span class="mono" data-i18n="fact.v">Version</span><strong>1.0.14</strong></div>
+            <div class="fact od-field"><span class="mono" data-i18n="fact.p">Platforms</span><strong>iOS · Android</strong></div>
+            <div class="fact od-field"><span class="mono" data-i18n="fact.l">Languages</span><strong>VI · EN</strong></div>
+            <div class="fact od-field"><span class="mono" data-i18n="fact.s">Stack</span><strong>RN · Expo</strong></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="wrap gallery-head reveal">
+      <div>
+        <span class="eyebrow" data-i18n="g.eyebrow">From the store</span>
+        <h3 data-i18n="g.title">Official screenshots</h3>
+      </div>
+      <span class="mono muted" data-i18n="g.hint">Click to enlarge</span>
+    </div>
+    <div class="gallery od-rail" id="gallery"></div>
+
+    <div class="wrap">
+      <div class="eco">
+        <article class="eco-node reveal" style="--d:0">
+          <svg class="od-icon" aria-hidden="true"><use href="#i-phone"/></svg>
+          <span class="tagline">React Native · Expo</span>
+          <h3 data-i18n="eco.app.t">Mobile app</h3>
+          <p data-i18n="eco.app.d">IVB Biz+ for iOS and Android, released through Fastlane.</p>
+          <div class="eco-wire"></div>
+        </article>
+        <article class="eco-node reveal" style="--d:1">
+          <svg class="od-icon" aria-hidden="true"><use href="#i-globe"/></svg>
+          <span class="tagline">ReactJS · Vite</span>
+          <h3 data-i18n="eco.web.t">Customer web</h3>
+          <p data-i18n="eco.web.d">The same banking experience in the browser, for customers who prefer desktop.</p>
+          <div class="eco-wire"></div>
+        </article>
+        <article class="eco-node reveal" style="--d:2">
+          <svg class="od-icon" aria-hidden="true"><use href="#i-admin"/></svg>
+          <span class="tagline">ReactJS</span>
+          <h3 data-i18n="eco.admin.t">Admin system</h3>
+          <p data-i18n="eco.admin.d">Back-office web for bank staff to manage customers, transactions and configuration.</p>
+          <div class="eco-wire"></div>
+        </article>
+      </div>
+      <div class="eco-foot reveal">
+        <div class="bus">
+          <svg class="od-icon" aria-hidden="true"><use href="#i-layers"/></svg>
+          <div class="bus-text"><strong data-i18n="bus.lib.t">Shared component library</strong><span data-i18n="bus.lib.d">One UI kit reused across app and web</span></div>
+        </div>
+        <div class="bus">
+          <svg class="od-icon" aria-hidden="true"><use href="#i-shield"/></svg>
+          <div class="bus-text"><strong data-i18n="bus.sec.t">Security layer</strong><span data-i18n="bus.sec.d">Face recognition, Soft OTP, third-party integrations</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CASE: CATHAY -->
+  <section class="cathay" id="cathay" aria-labelledby="ca-title">
+    <div class="wrap ca-grid">
+      <div class="reveal">
+        <a class="ca-browser" href="https://www.cathay-ins.com.vn/" target="_blank" rel="noopener" aria-label="Open cathay-ins.com.vn" style="display:block; text-decoration:none;">
+          <div class="ca-bar"><i></i><i></i><i></i><span class="ca-url">https://www.cathay-ins.com.vn</span></div>
+          <img class="od-media" src="assets/cathay/home.jpg" width="1440" height="900" alt="Cathay Insurance Vietnam homepage" loading="lazy">
+        </a>
+        <p class="ca-cap mono" data-i18n="ca.cap">cathay-ins.com.vn homepage</p>
+      </div>
+      <div class="ca-side reveal" style="--d:1">
+        <span class="eyebrow" data-i18n="ca.eyebrow">Featured case · Insurance</span>
+        <h2 id="ca-title">Cathay Insurance <span class="grad-text">Vietnam</span></h2>
+        <p class="sub" data-i18n="ca.sub">An online non-life insurance store and an internal app for sales agents. In production for years.</p>
+        <div class="ca-parts">
+          <div class="ca-part">
+            <svg class="od-icon" aria-hidden="true"><use href="#i-globe"/></svg>
+            <div class="ca-part-text"><strong data-i18n="ca.w.t">Online insurance website</strong><span data-i18n="ca.w.d">Customers explore and buy car, motorbike, health, travel and home insurance online, with policy lookup, claims and premium payment.</span></div>
+          </div>
+          <div class="ca-part">
+            <svg class="od-icon" aria-hidden="true"><use href="#i-phone"/></svg>
+            <div class="ca-part-text"><strong data-i18n="ca.a.t">Internal agent app</strong><span data-i18n="ca.a.d">A mobile app that lets agents sell and manage insurance policies from their phones. Distributed internally, not on public stores.</span></div>
+          </div>
+        </div>
+        <div class="od-cluster"><span class="chip on">Angular 13</span><span class="chip on">Ionic 6</span><span class="chip">Capacitor</span><span class="chip">TypeScript</span></div>
+        <div><a class="btn btn-primary magnet" href="https://www.cathay-ins.com.vn/" target="_blank" rel="noopener"><span data-i18n="ca.visit">Visit website</span><svg class="od-icon" aria-hidden="true"><use href="#i-external"/></svg></a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="alt" aria-labelledby="proj-title">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Projects</span>
+        <h2 id="proj-title" data-i18n="proj.title">More projects, 2018 — 2022</h2>
+        <p data-i18n="proj.lede">Insurance, HR, e-commerce, marketing and internal systems, across mobile, web and backend.</p>
+      </div>
+      <div class="filters od-cluster reveal" role="group" aria-label="Filter projects" id="filters">
+        <button class="filter" type="button" data-filter="all" aria-pressed="true"><span data-i18n="f.all">All</span><span class="count" data-count-cat="all"></span></button>
+        <button class="filter" type="button" data-filter="mobile" aria-pressed="false"><span data-i18n="f.mobile">Mobile</span><span class="count" data-count-cat="mobile"></span></button>
+        <button class="filter" type="button" data-filter="web" aria-pressed="false"><span data-i18n="f.web">Web</span><span class="count" data-count-cat="web"></span></button>
+        <button class="filter" type="button" data-filter="backend" aria-pressed="false"><span data-i18n="f.backend">Backend</span><span class="count" data-count-cat="backend"></span></button>
+      </div>
+      <div class="proj-grid" id="projGrid" aria-live="polite"></div>
+      <p class="more" data-i18n-html="proj.more">Also: <strong>SCJ</strong> e-commerce admin (Yii2), <strong>Ads Admin</strong> (ReactJS), <strong>Test Quiz Online</strong> backend (Laravel), and a <strong>WordPress</strong> theme for a computer store.</p>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" aria-labelledby="skills-title">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Skills</span>
+        <h2 id="skills-title" data-i18n="sk.title">What I work with</h2>
+        <p data-i18n="sk.lede">Highlighted tools are what I use every day. I have shipped production work with the rest.</p>
+      </div>
+      <div class="skills">
+        <article class="skill tilt reveal" style="--d:0">
+          <div class="skill-head"><svg class="od-icon" aria-hidden="true"><use href="#i-phone"/></svg><span class="skill-idx mono">01</span></div>
+          <h3 data-i18n="sk.m.t">Mobile</h3>
+          <p data-i18n="sk.m.d">Banking, insurance and commerce apps for iOS and Android, from feature work to release pipelines.</p>
+          <div class="od-cluster"><span class="chip on">React Native</span><span class="chip on">Expo</span><span class="chip on">Fastlane</span><span class="chip">Ionic</span><span class="chip">Capacitor</span><span class="chip">Cordova</span></div>
+        </article>
+        <article class="skill tilt reveal" style="--d:1">
+          <div class="skill-head"><svg class="od-icon" aria-hidden="true"><use href="#i-code"/></svg><span class="skill-idx mono">02</span></div>
+          <h3 data-i18n="sk.w.t">Web frontend</h3>
+          <p data-i18n="sk.w.d">Customer portals, admin dashboards and e-commerce frontends with reusable component libraries.</p>
+          <div class="od-cluster"><span class="chip on">ReactJS</span><span class="chip on">Vite</span><span class="chip on">TypeScript</span><span class="chip">Next.js</span><span class="chip">Angular</span><span class="chip">Vue / Nuxt</span><span class="chip">Sass</span></div>
+        </article>
+        <article class="skill tilt reveal" style="--d:2">
+          <div class="skill-head"><svg class="od-icon" aria-hidden="true"><use href="#i-server"/></svg><span class="skill-idx mono">03</span></div>
+          <h3 data-i18n="sk.b.t">Backend &amp; infra</h3>
+          <p data-i18n="sk.b.d">REST APIs and management systems. I have set up base source code and architecture for teams.</p>
+          <div class="od-cluster"><span class="chip on">Laravel</span><span class="chip on">PHP</span><span class="chip">Node.js</span><span class="chip">NestJS</span><span class="chip">Yii2</span><span class="chip">MySQL</span><span class="chip">MSSQL</span><span class="chip">Docker</span><span class="chip">Git</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience" class="alt" aria-labelledby="exp-title">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Experience</span>
+        <h2 id="exp-title" data-i18n="exp.title">Where I've worked</h2>
+      </div>
+      <ol class="timeline" id="timeline">
+        <span class="tl-fill" id="tlFill" aria-hidden="true"></span>
+        <li class="job reveal">
+          <div class="job-when"><span class="mono" data-i18n="j1.when">06/2022 — now</span><span data-i18n="j.hcm10">District 10, HCMC</span></div>
+          <div class="job-body">
+            <h3>TPIsoftware</h3>
+            <span class="job-role">Frontend Developer</span>
+            <p data-i18n="j1.d">Financial-sector projects: IVB Biz+ business banking (app, customer web, admin) and the IVBOne HR app for Indovina Bank, plus Cathay Insurance's agent app and online insurance sales site.</p>
+            <div class="od-cluster"><span class="chip">React Native</span><span class="chip">ReactJS</span><span class="chip">Angular</span><span class="chip">Ionic</span></div>
+          </div>
+        </li>
+        <li class="job reveal">
+          <div class="job-when"><span class="mono">12/2021 — 06/2022</span><span data-i18n="j.hcm11">District 11, HCMC</span></div>
+          <div class="job-body">
+            <h3>HEAD Capital</h3>
+            <span class="job-role">Laravel Developer</span>
+            <p data-i18n="j2.d">Ola City, a performance marketing platform where participants earn extra income by completing simple tasks.</p>
+            <div class="od-cluster"><span class="chip">Laravel 5.8</span><span class="chip">jQuery</span></div>
+          </div>
+        </li>
+        <li class="job reveal">
+          <div class="job-when"><span class="mono">08/2021 — 11/2021</span><span data-i18n="j.hcm3">District 3, HCMC</span></div>
+          <div class="job-body">
+            <h3>Briswell Vietnam</h3>
+            <span class="job-role" data-i18n="j3.role">Web Developer (freelance)</span>
+            <p data-i18n="j3.d">Management system for collecting car airbag inspection data.</p>
+            <div class="od-cluster"><span class="chip">Laravel 8</span><span class="chip">Vue 3</span></div>
+          </div>
+        </li>
+        <li class="job reveal">
+          <div class="job-when"><span class="mono">11/2019 — 08/2021</span><span data-i18n="j.hcm">Ho Chi Minh City</span></div>
+          <div class="job-body">
+            <h3>Qasoft</h3>
+            <span class="job-role">Junior Developer</span>
+            <p data-i18n="j4.d">Internal file manager (I designed the base source for the team), K-ID e-commerce frontend and SCJ e-commerce admin. I also freelanced on e-book, furniture and quiz systems.</p>
+            <div class="od-cluster"><span class="chip">Laravel</span><span class="chip">VueJS</span><span class="chip">ReactJS</span><span class="chip">React Native</span><span class="chip">Yii2</span></div>
+          </div>
+        </li>
+        <li class="job reveal">
+          <div class="job-when"><span class="mono">04/2018 — 03/2019</span><span data-i18n="j.nt">Nha Trang</span></div>
+          <div class="job-body">
+            <h3>Kipsoft</h3>
+            <span class="job-role">Web Developer</span>
+            <p data-i18n="j5.d">Yachin Shop, a buy-and-sell shopping app for Android and iOS with a Laravel backend.</p>
+            <div class="od-cluster"><span class="chip">Ionic</span><span class="chip">Laravel</span><span class="chip">Angular</span></div>
+          </div>
+        </li>
+      </ol>
+      <div class="edu reveal">
+        <svg class="od-icon" aria-hidden="true"><use href="#i-cap"/></svg>
+        <div class="edu-text"><strong data-i18n="edu.t">University of Information Technology (UIT)</strong><span data-i18n="edu.d">Computer Programming · 2017 — 2021</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" aria-labelledby="about-title">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">About</span>
+        <h2 id="about-title" data-i18n="ab.title">A bit about me</h2>
+      </div>
+      <div class="about-grid">
+        <p class="big reveal" data-i18n-html="ab.big">I started with <em>PHP and Laravel</em>, moved through Angular and Ionic, and now work every day in <em>React Native and React</em>. Knowing both sides of the API helps me work smoothly with backend teams.</p>
+        <ul class="about-list reveal" style="--d:1">
+          <li><svg class="od-icon" aria-hidden="true"><use href="#i-shield"/></svg><span data-i18n-html="ab.l1"><strong>Fintech-minded.</strong> 4+ years on banking and insurance products, where correctness and security come first.</span></li>
+          <li><svg class="od-icon" aria-hidden="true"><use href="#i-rocket"/></svg><span data-i18n-html="ab.l5"><strong>Ships to real users.</strong> My current work is live on the App Store and Google Play.</span></li>
+          <li><svg class="od-icon" aria-hidden="true"><use href="#i-team"/></svg><span data-i18n-html="ab.l2"><strong>Team &amp; solo.</strong> Comfortable managing independent projects and working in larger teams.</span></li>
+          <li><svg class="od-icon" aria-hidden="true"><use href="#i-pin"/></svg><span data-i18n-html="ab.l4"><strong>Based in Ho Chi Minh City.</strong> Working in Vietnamese and English.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact alt" id="contact" aria-labelledby="contact-title">
+    <div class="wrap">
+      <span class="eyebrow reveal">Contact</span>
+      <h2 id="contact-title" class="reveal"><span data-i18n="ct.t1">Let's build</span><br><span class="grad-text" data-i18n="ct.t2">something great.</span></h2>
+      <p class="lede reveal" data-i18n="ct.lede">Open to mobile and web roles, and to freelance work on React Native, React and Laravel projects.</p>
+      <div class="contact-cta od-cluster reveal">
+        <a class="btn btn-primary magnet" href="mailto:anhdv007@gmail.com"><span data-i18n="ct.mail">Email me</span><svg class="od-icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <a class="btn btn-ghost magnet" href="cv/Nguyen-Tai-Anh-CV.pdf" download><svg class="od-icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="cv.dl">Download CV</span></a>
+        <a class="btn btn-ghost magnet" href="cv.html" target="_blank" rel="noopener" data-i18n="cv.view">View CV online</a>
+        <button class="btn btn-ghost magnet" type="button" id="copyBtn"><svg class="od-icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="ct.copy">Copy email</span></button>
+        <span class="toast mono" id="toast" role="status" aria-live="polite"></span>
+      </div>
+      <div class="contact-grid">
+        <a class="c-card tilt reveal" style="--d:0" href="mailto:anhdv007@gmail.com">
+          <svg class="od-icon" aria-hidden="true"><use href="#i-mail"/></svg>
+          <span class="c-label">Email</span><span class="c-val">anhdv007@gmail.com</span>
+        </a>
+        <a class="c-card tilt reveal" style="--d:1" href="https://www.linkedin.com/in/anhdev-nt/" target="_blank" rel="noopener">
+          <svg class="od-icon" aria-hidden="true"><use href="#i-linkedin"/></svg>
+          <span class="c-label">LinkedIn</span><span class="c-val">in/anhdev-nt</span>
+        </a>
+        <a class="c-card tilt reveal" style="--d:2" href="https://github.com/NguyenTaiAnh" target="_blank" rel="noopener">
+          <svg class="od-icon" aria-hidden="true"><use href="#i-github"/></svg>
+          <span class="c-label">GitHub</span><span class="c-val">NguyenTaiAnh</span>
+        </a>
+        <a class="c-card tilt reveal" style="--d:3" href="https://zalo.me/0392974287" target="_blank" rel="noopener">
+          <svg class="od-icon" aria-hidden="true"><use href="#i-chat"/></svg>
+          <span class="c-label">Zalo</span><span class="c-val" data-i18n="ct.zalo">Chat on Zalo</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Nguyễn Tài Anh</span>
+    <span class="ft-right"><a class="ft-top" href="#top"><span data-i18n="ft.top">Back to top</span><svg aria-hidden="true" class="od-icon"><use href="#i-arrow"/></svg></a></span>
+  </div>
+</footer>
+
+<dialog class="lightbox" id="lightbox" aria-label="Screenshot viewer">
+  <div class="lb-inner">
+    <button class="lb-btn lb-prev" type="button" id="lbPrev" aria-label="Previous screenshot"><svg class="od-icon" aria-hidden="true"><use href="#i-left"/></svg></button>
+    <figure class="lb-figure"><img id="lbImg" src="assets/ivbbiz/shot-1.jpg" width="600" height="1299" alt=""></figure>
+    <button class="lb-btn lb-next" type="button" id="lbNext" aria-label="Next screenshot"><svg class="od-icon" aria-hidden="true"><use href="#i-right"/></svg></button>
+  </div>
+  <button class="lb-btn lb-close" type="button" id="lbClose" aria-label="Close"><svg class="od-icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+  <span class="lb-count mono" id="lbCount"></span>
+</dialog>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  root.classList.add('js');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  const mem = {};
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return mem[k] ?? null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) { mem[k] = v; } }
+  };
+
+  /* ---------- i18n ---------- */
+  const VI = {
+    'skip': 'Bỏ qua tới nội dung',
+    'nav.work': 'IVB Biz+', 'nav.projects': 'Dự án', 'nav.skills': 'Kỹ năng', 'nav.exp': 'Kinh nghiệm', 'nav.contact': 'Liên hệ',
+    'hero.status': 'Đang phát triển IVB Biz+ · TPIsoftware',
+    'hero.h1a': 'Tôi xây app ngân hàng',
+    'hero.h1b': 'mà người dùng thật sự dùng.',
+    'hero.lede': 'Tôi là <strong>Nguyễn Tài Anh</strong>, Mobile &amp; Web Developer với hơn 8 năm kinh nghiệm. Tôi phát triển <strong>IVB Biz+</strong>, app ngân hàng doanh nghiệp của Indovina Bank đang có trên App Store và Google Play, cùng web khách hàng và hệ thống admin, bằng <strong>React Native (Expo)</strong> và <strong>ReactJS</strong>. Nhiều năm làm backend <strong>Laravel</strong> giúp tôi hiểu cả hai phía của API.',
+    'hero.cta1': 'Xem IVB Biz+', 'hero.cta2': 'Liên hệ',
+    'stat.years': 'năm làm web & app', 'stat.projects': 'dự án đã triển khai', 'stat.fintech': 'năm mảng tài chính – ngân hàng',
+    'hero.alt': 'Chân dung Nguyễn Tài Anh mặc vest, đeo kính', 'hero.loc': 'TP. Hồ Chí Minh',
+    'fc1': 'Đã lên App Store & Play',
+    'case.eyebrow': 'Dự án nổi bật · 2022 — nay',
+    'case.sub': 'Ngân hàng số cho doanh nghiệp, phát triển cho Indovina Bank. Đã phát hành trên iOS và Android.',
+    'st.apple.s': 'Tải trên', 'st.play.s': 'Tải trên',
+    'fact.v': 'Phiên bản', 'fact.p': 'Nền tảng', 'fact.l': 'Ngôn ngữ', 'fact.s': 'Công nghệ',
+    's1.t': 'Trang chủ tập trung cho tài chính doanh nghiệp',
+    's1.d': 'Xây dashboard và màn hình tài khoản: số dư, giao dịch gần đây và lối tắt mà bộ phận tài chính cần xem nhanh.',
+    's2.t': 'Tạo và duyệt giao dịch mọi lúc, mọi nơi',
+    's2.d': 'Thanh toán doanh nghiệp cần người lập và người duyệt. App cho phép tạo và duyệt giao dịch bất cứ lúc nào, trên nhiều thiết bị, kèm chuyển khoản Napas và thanh toán hóa đơn.',
+    's3.t': 'Bảo mật mà vẫn nhẹ nhàng',
+    's3.d': 'Soft OTP và nhận diện khuôn mặt bảo vệ mọi thao tác quan trọng. Tôi làm phần cài đặt sinh trắc học, trong đó có bật/tắt Face ID.',
+    's4.t': 'Thẻ, khoản vay và thông báo',
+    's4.d': 'Xây tính năng thẻ, khoản vay và trung tâm thông báo, để doanh nghiệp luôn nắm được tình hình tài khoản.',
+    's5.t': 'Hệ thống admin phía sau',
+    's5.d': 'Phụ trách các luồng admin, nơi nhân viên ngân hàng quản lý khách hàng, giao dịch và nội dung app.',
+    's6.t': 'Ổn định và phát hành',
+    's6.d': 'Sửa lỗi ở tiền gửi, thanh toán hóa đơn và cài đặt; phát hành qua Fastlane và Docker, dùng chung thư viện component cho app và web.',
+    'g.eyebrow': 'Từ cửa hàng ứng dụng', 'g.title': 'Ảnh màn hình chính thức', 'g.hint': 'Bấm để phóng to',
+    'eco.app.t': 'App di động', 'eco.app.d': 'IVB Biz+ cho iOS và Android, phát hành qua Fastlane.',
+    'eco.web.t': 'Web khách hàng', 'eco.web.d': 'Trải nghiệm ngân hàng tương tự trên trình duyệt cho người dùng máy tính.',
+    'eco.admin.t': 'Hệ thống admin', 'eco.admin.d': 'Web nội bộ để nhân viên ngân hàng quản lý khách hàng, giao dịch và cấu hình.',
+    'bus.lib.t': 'Thư viện component dùng chung', 'bus.lib.d': 'Một bộ UI tái sử dụng cho cả app và web',
+    'bus.sec.t': 'Lớp bảo mật', 'bus.sec.d': 'Nhận diện khuôn mặt, Soft OTP, tích hợp bên thứ ba',
+    'proj.title': 'Các dự án khác, 2018 — 2022', 'proj.lede': 'Bảo hiểm, nhân sự, thương mại điện tử, marketing và hệ thống nội bộ, trên mobile, web và backend.',
+    'proj.more': 'Ngoài ra: trang quản trị TMĐT <strong>SCJ</strong> (Yii2), <strong>Ads Admin</strong> (ReactJS), backend <strong>Test Quiz Online</strong> (Laravel) và theme <strong>WordPress</strong> cho một cửa hàng máy tính.',
+    'f.all': 'Tất cả', 'f.mobile': 'Mobile', 'f.web': 'Web', 'f.backend': 'Backend',
+    'sk.title': 'Công nghệ tôi dùng', 'sk.lede': 'Mục tô sáng là công cụ dùng hằng ngày. Phần còn lại tôi đã dùng trong dự án thực tế.',
+    'sk.m.t': 'Mobile', 'sk.m.d': 'App ngân hàng, bảo hiểm và thương mại cho iOS và Android, từ làm tính năng đến quy trình phát hành.',
+    'sk.w.t': 'Web frontend', 'sk.w.d': 'Web khách hàng, dashboard quản trị và frontend TMĐT với thư viện component tái sử dụng.',
+    'sk.b.t': 'Backend & hạ tầng', 'sk.b.d': 'REST API và hệ thống quản lý. Tôi từng dựng source gốc và kiến trúc cho team.',
+    'exp.title': 'Quá trình làm việc',
+    'j1.when': '06/2022 — nay', 'j.hcm10': 'Quận 10, TP.HCM', 'j.hcm11': 'Quận 11, TP.HCM', 'j.hcm3': 'Quận 3, TP.HCM', 'j.hcm': 'TP. Hồ Chí Minh', 'j.nt': 'Nha Trang',
+    'j1.d': 'Các dự án tài chính: ngân hàng doanh nghiệp IVB Biz+ (app, web khách hàng, admin) và app nhân sự IVBOne cho Indovina Bank, cùng app đại lý và web bán bảo hiểm online của Cathay Insurance.',
+    'j2.d': 'Ola City, nền tảng performance marketing giúp người tham gia kiếm thêm thu nhập bằng các nhiệm vụ đơn giản.',
+    'j3.role': 'Web Developer (freelance)', 'j3.d': 'Hệ thống quản lý thu thập dữ liệu kiểm định túi khí ô tô.',
+    'j4.d': 'Hệ thống quản lý file nội bộ (tôi thiết kế source gốc cho team), frontend TMĐT K-ID và trang quản trị TMĐT SCJ. Song song làm freelance các hệ thống đọc sách, nội thất và thi trắc nghiệm.',
+    'j5.d': 'Yachin Shop, app mua bán trên Android và iOS với backend Laravel.',
+    'edu.t': 'Trường ĐH Công nghệ Thông tin (UIT)', 'edu.d': 'Lập trình máy tính · 2017 — 2021',
+    'ab.title': 'Đôi chút về tôi',
+    'ab.big': 'Tôi bắt đầu với <em>PHP và Laravel</em>, đi qua Angular và Ionic, và giờ làm việc hằng ngày với <em>React Native và React</em>. Hiểu cả hai phía của API giúp tôi phối hợp trơn tru với team backend.',
+    'ab.l1': '<strong>Tư duy fintech.</strong> Hơn 4 năm với sản phẩm ngân hàng và bảo hiểm, nơi tính chính xác và bảo mật luôn đặt lên đầu.',
+    'ab.l5': '<strong>Sản phẩm đến tay người dùng thật.</strong> Dự án hiện tại đang có trên App Store và Google Play.',
+    'ab.l2': '<strong>Làm nhóm & tự chủ.</strong> Tự quản lý tốt dự án độc lập và phối hợp hiệu quả trong team lớn.',
+    'ab.l4': '<strong>Sống tại TP. Hồ Chí Minh.</strong> Làm việc bằng tiếng Việt và tiếng Anh.',
+    'ct.t1': 'Cùng nhau xây', 'ct.t2': 'điều gì đó thật tốt.',
+    'ct.lede': 'Sẵn sàng cho vị trí mobile và web, cũng như dự án freelance về React Native, React và Laravel.',
+    'ct.mail': 'Gửi email', 'ct.zalo': 'Nhắn qua Zalo', 'ct.copy': 'Sao chép email',
+    'ct.copied': 'Đã sao chép email', 'ct.copyFail': 'Không sao chép được. Email: anhdv007@gmail.com',
+    'ft.top': 'Lên đầu trang',
+    'cv.dl': 'Tải CV', 'cv.short': 'CV', 'cv.view': 'Xem CV online',
+    'ca.eyebrow': 'Dự án nổi bật · Bảo hiểm',
+    'ca.sub': 'Website bán bảo hiểm phi nhân thọ online và app nội bộ cho đại lý. Đã vận hành nhiều năm.',
+    'ca.visit': 'Xem website',
+    'ca.w.t': 'Website bán bảo hiểm online',
+    'ca.w.d': 'Khách hàng tìm hiểu và mua bảo hiểm ô tô, xe máy, sức khỏe, du lịch và nhà ở trực tuyến, kèm tra cứu hợp đồng, bồi thường và thanh toán phí.',
+    'ca.a.t': 'App nội bộ cho đại lý',
+    'ca.a.d': 'Ứng dụng di động giúp đại lý bán và quản lý hợp đồng bảo hiểm ngay trên điện thoại. Phát hành nội bộ, không có trên store công khai.',
+    'ca.cap': 'Trang chủ cathay-ins.com.vn',
+    'proj.none': 'Chưa có dự án nào trong nhóm này.', 'shot': 'Ảnh màn hình', 'shotAlt': 'Ảnh màn hình IVB Biz+ trên App Store'
+  };
+  const EN = { 'ct.copied': 'Email copied', 'ct.copyFail': "Couldn't copy. Email: anhdv007@gmail.com", 'proj.none': 'No projects in this group yet.', 'shot': 'Screenshot', 'shotAlt': 'IVB Biz+ App Store screenshot' };
+  document.querySelectorAll('[data-i18n]').forEach(el => { EN[el.dataset.i18n] ??= el.textContent; });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { EN[el.dataset.i18nHtml] ??= el.innerHTML; });
+  document.querySelectorAll('[data-i18n-alt]').forEach(el => { EN[el.dataset.i18nAlt] ??= el.alt; });
+  let lang = store.get('lang') === 'vi' ? 'vi' : 'en';
+  const t = (k) => (lang === 'vi' ? VI[k] : EN[k]) ?? EN[k] ?? k;
+  const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  /* ---------- screenshots ---------- */
+  const SHOTS = [1, 2, 3, 4, 5, 6].map(n => `assets/ivbbiz/shot-${n}.jpg`);
+
+  const gallery = document.getElementById('gallery');
+  function renderGallery() {
+    gallery.innerHTML = SHOTS.map((src, i) => `
+      <button class="g-item" type="button" data-shot="${i}" aria-label="${esc(t('shot'))} ${i + 1} / ${SHOTS.length}">
+        <figure><img class="od-media" src="${src}" width="600" height="1299" alt="${esc(t('shotAlt'))} ${i + 1}" loading="lazy"></figure>
+        <figcaption class="mono">${String(i + 1).padStart(2, '0')} / ${String(SHOTS.length).padStart(2, '0')}</figcaption>
+      </button>`).join('');
+  }
+
+  /* lightbox */
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbCount = document.getElementById('lbCount');
+  let lbIndex = 0, lbReturn = null;
+  function showLb(i) {
+    lbIndex = (i + SHOTS.length) % SHOTS.length;
+    lbImg.src = SHOTS[lbIndex];
+    lbImg.alt = `${t('shotAlt')} ${lbIndex + 1}`;
+    lbCount.textContent = `${String(lbIndex + 1).padStart(2, '0')} / ${String(SHOTS.length).padStart(2, '0')}`;
+    lbImg.style.animation = 'none'; void lbImg.offsetWidth; lbImg.style.animation = '';
+  }
+  gallery.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-shot]');
+    if (!b || gallery.dataset.dragged === '1') return;
+    lbReturn = Number(b.dataset.shot);
+    showLb(lbReturn);
+    if (typeof lb.showModal === 'function') lb.showModal(); else lb.setAttribute('open', '');
+    document.getElementById('lbClose').focus();
+  });
+  document.getElementById('lbPrev').addEventListener('click', () => showLb(lbIndex - 1));
+  document.getElementById('lbNext').addEventListener('click', () => showLb(lbIndex + 1));
+  document.getElementById('lbClose').addEventListener('click', () => lb.close());
+  lb.addEventListener('click', (e) => { if (e.target === lb || e.target.classList.contains('lb-inner') || e.target.classList.contains('lb-figure')) lb.close(); });
+  lb.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') showLb(lbIndex - 1); if (e.key === 'ArrowRight') showLb(lbIndex + 1); });
+  lb.addEventListener('close', () => {
+    const target = gallery.querySelector(`[data-shot="${lbIndex}"]`) || gallery.querySelector('[data-shot]');
+    if (target) target.focus();
+  });
+
+  /* drag-to-scroll gallery (mouse) */
+  let drag = null;
+  gallery.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') return; drag = { x: e.clientX, s: gallery.scrollLeft, moved: false }; gallery.dataset.dragged = '0'; });
+  window.addEventListener('pointermove', (e) => { if (!drag) return; const dx = e.clientX - drag.x; if (Math.abs(dx) > 5) { drag.moved = true; gallery.dataset.dragged = '1'; } gallery.scrollLeft = drag.s - dx; });
+  window.addEventListener('pointerup', () => { if (drag && drag.moved) setTimeout(() => { gallery.dataset.dragged = '0'; }, 0); drag = null; });
+
+  /* ---------- projects ---------- */
+  const PROJECTS = [
+    { name: 'IVBOne', org: 'TPIsoftware · Indovina Bank', year: '2022+', cats: ['mobile'],
+      en: 'Human resource management app for bank staff.', vi: 'App quản lý nhân sự cho nhân viên ngân hàng.', tags: ['Angular 14', 'Ionic 6', 'Cordova'] },
+    { name: 'Ola City', org: 'HEAD Capital', year: '2022', cats: ['backend', 'web'],
+      en: 'Performance marketing platform where users earn extra income from simple tasks.', vi: 'Nền tảng performance marketing, người dùng kiếm thêm thu nhập từ nhiệm vụ đơn giản.', tags: ['Laravel 5.8', 'jQuery'] },
+    { name: 'Airbag Inspection System', nameVi: 'Hệ thống kiểm định túi khí', org: 'Briswell Vietnam', year: '2021', cats: ['backend', 'web'],
+      en: 'Collects and manages car airbag inspection records.', vi: 'Thu thập và quản lý dữ liệu kiểm định túi khí ô tô.', tags: ['Laravel 8', 'Vue 3'] },
+    { name: 'File Manager', org: 'Qasoft', year: '2020', cats: ['backend', 'web'],
+      en: 'Internal file sharing with users, categories, upload and sharing, notifications and email templates. I designed the base source for the team.', vi: 'Chia sẻ file nội bộ: người dùng, danh mục, upload/chia sẻ, thông báo, mẫu email. Tôi thiết kế source gốc cho team.', tags: ['Laravel', 'VueJS'] },
+    { name: 'K-ID', org: 'Qasoft', year: '2020', cats: ['web', 'mobile'],
+      en: 'Marketplace-style e-commerce platform, web and mobile frontend.', vi: 'Nền tảng thương mại điện tử dạng sàn, frontend web và mobile.', tags: ['ReactJS', 'Next.js', 'React Native'] },
+    { name: 'E-book Reader', org: 'Freelance', year: '2020', cats: ['mobile'],
+      en: 'Read from a book store with bookmarks, highlights, notes and offline reading.', vi: 'Đọc sách từ cửa hàng, có bookmark, highlight, ghi chú và đọc offline.', tags: ['React Native'] },
+    { name: 'Furniture Production', nameVi: 'Quản lý sản xuất nội thất', org: 'Freelance', year: '2020', cats: ['backend', 'web'],
+      en: 'Interior production workflow covering product development, pricing, quality control and orders.', vi: 'Quy trình sản xuất nội thất: phát triển sản phẩm, báo giá, kiểm soát chất lượng, đơn hàng.', tags: ['Laravel', 'VueJS', 'NuxtJS'] },
+    { name: 'Yachin Shop', org: 'Kipsoft', year: '2018', cats: ['mobile', 'backend'],
+      en: 'Buy-and-sell shopping app for Android and iOS.', vi: 'App mua bán hàng hóa trên Android và iOS.', tags: ['Ionic', 'Laravel'] }
+  ];
+  let filter = 'all';
+  const grid = document.getElementById('projGrid');
+  function renderProjects(animate) {
+    const list = PROJECTS.filter(p => filter === 'all' || p.cats.includes(filter));
+    if (!list.length) { grid.innerHTML = `<p class="muted">${esc(t('proj.none'))}</p>`; return; }
+    grid.innerHTML = list.map((p, i) => `
+      <article class="proj tilt" style="--i:${i}">
+        <div class="proj-top"><span class="proj-org mono od-truncate">${esc(p.org)}</span><span class="proj-year mono">${esc(p.year)}</span></div>
+        <h3>${esc(lang === 'vi' && p.nameVi ? p.nameVi : p.name)}</h3>
+        <p>${esc(lang === 'vi' ? p.vi : p.en)}</p>
+        <div class="tags od-cluster">${p.tags.map(tg => `<span class="chip">${esc(tg)}</span>`).join('')}</div>
+      </article>`).join('');
+  }
+  document.querySelectorAll('[data-count-cat]').forEach(el => {
+    const k = el.dataset.countCat;
+    el.textContent = String(k === 'all' ? PROJECTS.length : PROJECTS.filter(p => p.cats.includes(k)).length);
+  });
+  document.getElementById('filters').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-filter]');
+    if (!btn) return;
+    filter = btn.dataset.filter;
+    document.querySelectorAll('[data-filter]').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    renderProjects(true);
+  });
+
+  /* ---------- language ---------- */
+  function applyLang() {
+    root.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+    document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.alt = t(el.dataset.i18nAlt); });
+    document.querySelectorAll('[data-lang-opt]').forEach(el => { el.dataset.active = String(el.dataset.langOpt === lang); });
+    document.title = lang === 'vi' ? 'Nguyễn Tài Anh — Lập trình viên Mobile & Web' : 'Nguyễn Tài Anh — Mobile & Web Developer';
+    renderProjects(false);
+    renderGallery();
+  }
+  document.getElementById('langBtn').addEventListener('click', () => { lang = lang === 'en' ? 'vi' : 'en'; store.set('lang', lang); applyLang(); });
+
+  /* ---------- theme ---------- */
+  const themeBtn = document.getElementById('themeBtn');
+  function applyTheme(th) {
+    root.dataset.theme = th;
+    themeBtn.querySelector('use').setAttribute('href', th === 'dark' ? '#i-sun' : '#i-moon');
+    themeBtn.setAttribute('aria-pressed', String(th === 'light'));
+  }
+  let theme = store.get('theme') || 'dark';
+  applyTheme(theme);
+  themeBtn.addEventListener('click', () => { theme = theme === 'dark' ? 'light' : 'dark'; store.set('theme', theme); applyTheme(theme); });
+
+  /* ---------- mobile menu ---------- */
+  const menuBtn = document.getElementById('menuBtn');
+  const menu = document.getElementById('mobileMenu');
+  function setMenu(open) { menu.hidden = !open; menuBtn.setAttribute('aria-expanded', String(open)); menuBtn.querySelector('use').setAttribute('href', open ? '#i-close' : '#i-menu'); }
+  menuBtn.addEventListener('click', () => setMenu(menu.hidden));
+  menu.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { setMenu(false); menuBtn.focus(); } });
+
+  /* ---------- copy email ---------- */
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    let ok = false;
+    try { await navigator.clipboard.writeText('anhdv007@gmail.com'); ok = true; } catch (e) { ok = false; }
+    toast.textContent = t(ok ? 'ct.copied' : 'ct.copyFail');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast.textContent = ''; }, 3000);
+  });
+
+  /* ---------- count-up ---------- */
+  function countUp(el) {
+    const to = Number(el.dataset.count);
+    if (reduced) { el.textContent = String(to); return; }
+    const dur = 1400, start = performance.now();
+    const step = (now) => { const p = Math.min(1, (now - start) / dur); const eased = 1 - Math.pow(1 - p, 3); el.textContent = String(Math.round(to * eased)); if (p < 1) requestAnimationFrame(step); };
+    el.textContent = '0'; requestAnimationFrame(step);
+  }
+
+  /* ---------- observers ---------- */
+  const navLinks = document.querySelectorAll('.nav-links a');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    const gIO = new IntersectionObserver((entries) => {
+      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('shown'); gIO.unobserve(en.target); } });
+    }, { threshold: 0.12 });
+    gIO.observe(grid);
+
+    const cIO = new IntersectionObserver((entries) => {
+      entries.forEach(en => { if (en.isIntersecting) { setTimeout(() => countUp(en.target), 500); cIO.unobserve(en.target); } });
+    }, { threshold: 0.6 });
+    document.querySelectorAll('[data-count]').forEach(el => cIO.observe(el));
+
+
+    const secIO = new IntersectionObserver((entries) => {
+      entries.forEach(en => { if (en.isIntersecting) navLinks.forEach(a => a.setAttribute('aria-current', String(a.getAttribute('href') === '#' + en.target.id))); });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    ['work', 'projects', 'skills', 'experience', 'contact'].forEach(id => { const s = document.getElementById(id); if (s) secIO.observe(s); });
+  } else {
+    grid.classList.add('shown');
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  }
+
+  /* ---------- scroll: progress, nav, timeline ---------- */
+  const progress = document.getElementById('progress');
+  const nav = document.getElementById('nav');
+  const timeline = document.getElementById('timeline');
+  const tlFill = document.getElementById('tlFill');
+  const jobs = timeline.querySelectorAll('.job');
+  let ticking = false;
+  function onScroll() {
+    const h = document.documentElement.scrollHeight - innerHeight;
+    progress.style.transform = `scaleX(${h > 0 ? scrollY / h : 0})`;
+    nav.classList.toggle('scrolled', scrollY > 8);
+    const r = timeline.getBoundingClientRect();
+    const mid = innerHeight * 0.6;
+    const p = Math.max(0, Math.min(1, (mid - r.top) / r.height));
+    tlFill.style.setProperty('--tl', p.toFixed(3));
+    jobs.forEach(j => { const jr = j.getBoundingClientRect(); j.classList.toggle('lit', jr.top + 20 < mid); });
+    ticking = false;
+  }
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  addEventListener('resize', onScroll);
+  onScroll();
+
+  /* ---------- pointer effects (fine pointers, motion allowed) ---------- */
+  if (finePointer && !reduced) {
+    const hero = document.querySelector('.hero');
+    hero.addEventListener('pointermove', (e) => {
+      const r = hero.getBoundingClientRect();
+      hero.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      hero.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
+
+    document.addEventListener('pointermove', (e) => {
+      const el = e.target.closest && e.target.closest('.tilt');
+      document.querySelectorAll('.tilt.hot').forEach(x => { if (x !== el) { x.classList.remove('hot'); x.style.transform = ''; } });
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      el.classList.add('hot');
+      el.style.setProperty('--px', `${x * 100}%`); el.style.setProperty('--py', `${y * 100}%`);
+      el.style.transform = `perspective(900px) rotateX(${(0.5 - y) * 6}deg) rotateY(${(x - 0.5) * 6}deg) translateY(-6px)`;
+    });
+
+    document.querySelectorAll('.magnet').forEach(m => {
+      m.addEventListener('pointermove', (e) => {
+        const r = m.getBoundingClientRect();
+        const dx = (e.clientX - (r.left + r.width / 2)) / r.width, dy = (e.clientY - (r.top + r.height / 2)) / r.height;
+        m.style.transform = `translate(${dx * 10}px, ${dy * 8}px)`;
+      });
+      m.addEventListener('pointerleave', () => { m.style.transform = ''; });
+    });
+
+    const cursor = document.getElementById('cursor');
+    let cx = innerWidth / 2, cy = innerHeight / 2, tx = cx, ty = cy;
+    document.addEventListener('pointermove', (e) => {
+      tx = e.clientX; ty = e.clientY; cursor.classList.add('on');
+      cursor.classList.toggle('big', !!(e.target.closest && e.target.closest('a, button, .g-item')));
+    });
+    document.addEventListener('pointerleave', () => cursor.classList.remove('on'));
+    (function loop() { cx += (tx - cx) * 0.2; cy += (ty - cy) * 0.2; cursor.style.transform = `translate(${cx}px, ${cy}px)`; requestAnimationFrame(loop); })();
+  }
+
+  document.getElementById('year').textContent = String(new Date().getFullYear());
+  applyLang();
+})();
+</script>
+</body>
+</html>
